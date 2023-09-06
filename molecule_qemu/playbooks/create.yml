@@ -159,12 +159,13 @@
         type: ed25519
       register: ssh_keypair
 
-    - name: Fetch ARM VMs bios
-      when: "'aarch64' in molecule_instances | map(attribute='image_arch') | list | unique"
+    - name: Install EDK II for supported platforms
+      loop:
+        - x86_64
+        - aarch64
       ansible.builtin.copy:
-        src: "QEMU_EFI.fd"
-        dest: "{{ molecule_driver_directory }}/QEMU_EFI.fd"
-        checksum: "784ad38513e327287e96d511c9ca0219aa94e672"
+        src: "edk2-{{ item }}.fd"
+        dest: "{{ molecule_driver_directory }}/"
         mode: "0644"
 
     ### images ###############################################################
@@ -283,16 +284,14 @@
         -display none
         -daemonize
         -pidfile {{ item.path_pid }}
+        -bios {{ molecule_driver_directory }}/edk2-{{ item.image_arch }}.fd
         {% if item.image_arch == 'aarch64' %}
-        -bios {{ molecule_driver_directory }}/QEMU_EFI.fd
         -machine virt
-        {% if item.image_arch == ansible_machine %}
+        {% if qemu_cap_hvf and item.image_arch == ansible_machine %}
         -cpu host
+        -accel hvf
         {% else %}
         -cpu cortex-a76
-        {% endif %}
-        {% if qemu_cap_hvf %}
-        -accel hvf
         {% endif %}
         {% endif %}
         {% if qemu_cap_kvm and item.image_arch == ansible_machine %}

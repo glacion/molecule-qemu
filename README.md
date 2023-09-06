@@ -221,3 +221,8 @@ The development of the Molecule `QEMU` driver was motivated by the author's choi
 
 * [vmnet.framework modes](https://lore.kernel.org/all/20220315230741.21578-7-Vladislav.Yaroshchuk@jetbrains.com/T/)
 
+## Binary Blobs
+
+`edk2-aarch64.fd` and `edk2-x86_64` are instaled in `~/.cache/molecule/.qemu`.
+These files are retrieved from [Arch Linux](https://archlinux.org/packages/extra/any/edk2/)
+repositories, with version `202308-2`.
